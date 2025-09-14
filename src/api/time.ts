@@ -1,36 +1,27 @@
-import {sleep} from "./sleep.ts";
+import {getIp} from "./ip.ts";
 
-export interface TimeApiResponse {
-    utc_offset: string;
-    timezone: string;
-    day_of_week: number;
-    day_of_year: number;
-    datetime: string;
-    utc_datetime: string;
-    unixtime: number;
-    raw_offset: number;
-    week_number: number;
-    dst: boolean;
-    abbreviation: string;
-    dst_offset: number;
-    dst_from: string;
-    dst_until: string;
-    client_ip: string;
+interface TimeApiResponse {
+    year: number;
+    month: number;
+    day: number;
+    hour: number;
+    minute: number;
+    seconds: number;
+    milliSeconds: number;
+    dateTime: string;
+    date: string;
+    time: string;
+    timeZone: string;
+    dayOfWeek: string;
+    dstActive: boolean;
 }
 
 export async function getCurrentTime() {
     const res = await getAPIResponse();
-    return new Date(res.datetime);
+    return new Date(res.dateTime);
 }
 
-async function getAPIResponse(tryCount = 0): Promise<TimeApiResponse> {
-    try {
-        const res = await fetch("https://worldtimeapi.org/api/ip");
-        return await res.json();
-    } catch (e) {
-        tryCount++;
-        console.log(`Essai ${tryCount} : ${e}`);
-        await sleep(500);
-        return await getAPIResponse(tryCount);
-    }
+async function getAPIResponse(): Promise<TimeApiResponse> {
+    const res = await fetch(`https://timeapi.io/api/time/current/ip?ipAddress=${await getIp()}`);
+    return await res.json();
 }

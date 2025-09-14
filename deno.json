@@ -5,6 +5,7 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
-    "hcloud-js": "npm:hcloud-js@^1.4.1"
+    "hcloud-js": "npm:hcloud-js@^1.4.1",
+    "public-ip": "npm:public-ip@^7.0.1"
   }
 }
