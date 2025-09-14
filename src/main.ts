@@ -1,6 +1,7 @@
 import HetznerCloud, {Server} from './types/hcloud.ts';
-import {DateTime} from 'npm:luxon';
 import {isInVacances} from "./api/calendrier.ts";
+import {getCurrentTime} from "./api/time.ts";
+import {sleep} from "./api/sleep.ts";
 
 const SERVER_ID = parseInt(Deno.env.get("SERVER_ID")!);
 
@@ -19,17 +20,10 @@ function isTomorrowWeekend(date: Date): boolean {
     return day === 5 || day === 6; // 5 = vendredi, 6 = samedi
 }
 
-// Récupérer l'heure actuelle à Paris
-function getParisDate(): Date {
-    return DateTime.now()
-        .setZone('Europe/Paris')
-        .toJSDate();
-}
-
 async function checkAndUpdateServer(client: HetznerCloud.Client) {
     const server: Server = await client.servers.get(SERVER_ID);
 
-    const now = getParisDate();
+    const now = await getCurrentTime();
     const heure = now.getHours() + now.getMinutes() / 60;
     const weekend = isTomorrowWeekend(now);
     const vacances = await isInVacances(now);
@@ -70,7 +64,8 @@ async function main() {
             console.error("Erreur lors de la vérification du serveur :", e);
             break;
         }
-        await new Promise((resolve) => setTimeout(resolve, 60000)); // 1 minute
+
+        await sleep(60 * 1000);
     }
 }
 
