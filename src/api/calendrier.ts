@@ -35,6 +35,7 @@ async function getVacances(date: Date): Promise<Vacances[]> {
     }
 
     cachedVacances.set(year, data);
+    console.log(`Cache mis à jour pour l'année ${year}.`);
 
     return data;
 }
