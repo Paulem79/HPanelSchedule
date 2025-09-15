@@ -26,6 +26,7 @@ async function checkAndUpdateServer(client: HetznerCloud.Client) {
     const now = await getCurrentTime();
     const heure = now.getHours() + now.getMinutes() / 60;
     const weekend = isTomorrowWeekend(now);
+    const mercredi = now.getDay() === 3;
     const vacances = await isInVacances(now);
 
     console.log(`Nous sommes ${weekend ? "le weekend demain" : "la semaine"} et nous sommes en ${vacances ? "vacances" : "période scolaire"}. L'heure actuelle est de ${heure.toFixed(2)} heures.`)
@@ -36,7 +37,8 @@ async function checkAndUpdateServer(client: HetznerCloud.Client) {
         doitEtreAllume = false;
     } else if (!weekend && !vacances) {
         // Semaine, période scolaire
-        if ((heure >= 21 && heure < 24) || (heure >= 0 && heure < 16.5)) {
+        // Si mercredi -> 11h sinon 16.5h
+        if ((heure >= 21 && heure < 24) || (heure >= 0 && heure < (mercredi ? 11 : 16.5))) {
             doitEtreAllume = false;
         }
     }
