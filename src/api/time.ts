@@ -1,5 +1,3 @@
-import {getIp} from "./ip.ts";
-
 interface TimeApiResponse {
     year: number;
     month: number;

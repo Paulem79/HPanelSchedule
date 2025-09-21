@@ -42,6 +42,11 @@ if (!Deno.env.get("SERVER_ID")) {
     Deno.exit(1);
 }
 
+function isWeekend(date: Date): boolean {
+    const day = date.getDay();
+    return day === 0 || day === 6; // 0 = dimanche, 6 = samedi
+}
+
 function isTomorrowWeekend(date: Date): boolean {
     const day = date.getDay();
     return day === 5 || day === 6; // 5 = vendredi, 6 = samedi
@@ -52,7 +57,7 @@ async function checkAndUpdateServer(client: HetznerCloud.Client) {
 
     const now = await getCurrentTime();
     const heure = now.getHours() + now.getMinutes() / 60;
-    const weekend = isTomorrowWeekend(now);
+    const weekend = isWeekend(now);
     const mercredi = now.getDay() === 3;
     const vacances = await isInVacances(now);
 
@@ -65,7 +70,7 @@ async function checkAndUpdateServer(client: HetznerCloud.Client) {
     } else if (!weekend && !vacances) {
         // Semaine, période scolaire
         // Si mercredi -> 11h sinon 16.5h
-        if ((heure >= 21 && heure < 24) || (heure >= 0 && heure < (mercredi ? 11 : 16.5))) {
+        if (!isTomorrowWeekend(date) && ((heure >= 21 && heure < 24) || (heure >= 0 && heure < (mercredi ? 11 : 16.5)))) {
             doitEtreAllume = false;
         }
     }
