@@ -15,15 +15,19 @@ async function writeLog(message: string) {
 const originalLog = console.log;
 console.log = (...args: unknown[]) => {
     const msg = args.map(String).join(' ');
-    originalLog(msg);
-    writeLog(msg);
+    originalLog(msg); // Affiche dans la console
+    writeLog(msg).catch((e) => {
+        originalLog('[LOG ERROR]', e);
+    }); // Écrit dans log.txt
 };
 
 const originalError = console.error;
 console.error = (...args: unknown[]) => {
     const msg = args.map(String).join(' ');
-    originalError(msg);
-    writeLog('[ERROR] ' + msg);
+    originalError(msg); // Affiche dans la console
+    writeLog('[ERROR] ' + msg).catch((e) => {
+        originalError('[LOG ERROR]', e);
+    }); // Écrit dans log.txt
 };
 
 const SERVER_ID = parseInt(Deno.env.get("SERVER_ID")!);
