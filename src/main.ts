@@ -3,6 +3,29 @@ import {isInVacances} from "./api/calendrier.ts";
 import {getCurrentTime} from "./api/time.ts";
 import {sleep} from "./api/sleep.ts";
 
+// Ajout de la redirection des logs vers log.txt
+const logFilePath = './log.txt';
+
+async function writeLog(message: string) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(message + '\n');
+    await Deno.writeFile(logFilePath, data, { append: true });
+}
+
+const originalLog = console.log;
+console.log = (...args: unknown[]) => {
+    const msg = args.map(String).join(' ');
+    originalLog(msg);
+    writeLog(msg);
+};
+
+const originalError = console.error;
+console.error = (...args: unknown[]) => {
+    const msg = args.map(String).join(' ');
+    originalError(msg);
+    writeLog('[ERROR] ' + msg);
+};
+
 const SERVER_ID = parseInt(Deno.env.get("SERVER_ID")!);
 
 if (!Deno.env.get("TOKEN")) {
@@ -64,7 +87,6 @@ async function main() {
             await checkAndUpdateServer(client);
         } catch (e) {
             console.error("Erreur lors de la vérification du serveur :", e);
-            break;
         }
 
         await sleep(60 * 1000);
