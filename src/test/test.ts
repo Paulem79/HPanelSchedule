@@ -15,7 +15,7 @@ Deno.test({
     name: "request_time_api",
     permissions: { net: true },
     fn: async () => {
-        const currentDate = await getCurrentTime();
+        const currentDate = getCurrentTime();
         assert.assertExists(currentDate);
     }
 });

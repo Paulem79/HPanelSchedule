@@ -55,7 +55,7 @@ function isTomorrowWeekend(date: Date): boolean {
 async function checkAndUpdateServer(client: HetznerCloud.Client) {
     const server: Server = await client.servers.get(SERVER_ID);
 
-    const now = await getCurrentTime();
+    const now = getCurrentTime();
     const heure = now.getHours() + now.getMinutes() / 60;
     const weekend = isWeekend(now);
     const mercredi = now.getDay() === 3;
@@ -70,7 +70,7 @@ async function checkAndUpdateServer(client: HetznerCloud.Client) {
     } else if (!weekend && !vacances) {
         // Semaine, période scolaire
         // Si mercredi -> 11h sinon 16.5h
-        if (!isTomorrowWeekend(date) && ((heure >= 21 && heure < 24) || (heure >= 0 && heure < (mercredi ? 11 : 16.5)))) {
+        if (!isTomorrowWeekend(now) && ((heure >= 21 && heure < 24) || (heure >= 0 && heure < (mercredi ? 11 : 16.5)))) {
             doitEtreAllume = false;
         }
     }
@@ -94,8 +94,8 @@ async function main() {
     while (true) {
         try {
             await checkAndUpdateServer(client);
-        } catch (e) {
-            console.error("Erreur lors de la vérification du serveur :", e);
+        } catch (e: Error) {
+            console.error("Erreur lors de la vérification du serveur :", e.stack);
         }
 
         await sleep(60 * 1000);
