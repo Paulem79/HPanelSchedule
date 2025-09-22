@@ -61,7 +61,7 @@ async function checkAndUpdateServer(client: HetznerCloud.Client) {
     const mercredi = now.getDay() === 3;
     const vacances = await isInVacances(now);
 
-    console.log(`Nous sommes ${weekend ? "le weekend demain" : "la semaine"} et nous sommes en ${vacances ? "vacances" : "période scolaire"}. L'heure actuelle est de ${heure.toFixed(2)} heures.`)
+    console.log(`Nous sommes ${weekend ? "le weekend" : "la semaine"} et nous sommes en ${vacances ? "vacances" : "période scolaire"}. L'heure actuelle est de ${heure.toFixed(2)} heures.`)
 
     let doitEtreAllume = true;
 
